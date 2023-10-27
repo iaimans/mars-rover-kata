@@ -1,84 +1,144 @@
-import mars_rover.*;
+import static mars_rover.Command.BACKWARD;
+import static mars_rover.Command.FORWARD;
+import static mars_rover.Command.TURN_LEFT;
+import static mars_rover.Command.TURN_RIGHT;
+import static roverAssertions.RoverAssert.assertThat;
+
+import java.util.List;
+import java.util.stream.Stream;
+
+import mars_rover.Command;
+import mars_rover.Direction;
+import mars_rover.East;
+import mars_rover.North;
+import mars_rover.Position;
+import mars_rover.Rover;
+import mars_rover.South;
+import mars_rover.West;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
-
-import java.util.List;
-
-import static mars_rover.Command.*;
-import static roverAssertions.RoverAssert.assertThat;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class RoverShould {
-    Position initialPosition;
-    Direction initialDirection;
-    Rover rover;
 
-    @BeforeEach
-    void setup() {
-        initialPosition = new Position(0, 0);
-        initialDirection = new North();
-        rover = new Rover(initialPosition, initialDirection);
-    }
+  Position initialPosition;
 
-    @Test
-    void start_with_and_initial_position_facing_initial_direction() {
-        assertThat(rover).hasPosition(initialPosition);
-        assertThat(rover).hasDirection(initialDirection);
-    }
+  Direction initialDirection;
 
-    @ParameterizedTest(name = "facing in {0}")
-    @EnumSource(value = DirectionsToLeft.class)
-    void turn_left(DirectionsToLeft direction) {
-        Rover rover = new Rover(initialPosition, direction.initialDirection);
-        rover.turnLeft();
-        assertThat(rover).hasDirection(direction.expectedDirection);
-    }
+  Rover rover;
 
-    @ParameterizedTest(name = "facing in {0}")
-    @EnumSource(value = DirectionsToRight.class)
-    void turn_right(DirectionsToRight direction) {
-        Rover rover = new Rover(initialPosition, direction.initialDirection);
-        rover.turnRight();
-        assertThat(rover).hasDirection(direction.expectedDirection);
-    }
+  @BeforeEach
+  void setup() {
+    initialPosition = new Position(0, 0);
+    initialDirection = new North();
+    rover = new Rover(initialPosition, initialDirection);
+  }
 
-    @ParameterizedTest(name = "in {0}")
-    @EnumSource(value = PositionsToMoveForward.class)
-    void move_forward(PositionsToMoveForward positionToMoveForward) {
-        Rover rover = new Rover(initialPosition, positionToMoveForward.direction);
-        rover.moveForward();
+  @Test
+  void start_with_and_initial_position_facing_initial_direction() {
+    assertThat(rover).hasPosition(initialPosition);
+    assertThat(rover).hasDirection(initialDirection);
+  }
 
-        assertThat(rover).hasPosition(positionToMoveForward.expected);
-    }
+  private static Stream<Arguments> parametersDirectionsToLeftTest() {
+    return Stream.of(
+        Arguments.of(new North(), new West()),
+        Arguments.of(new South(), new East()),
+        Arguments.of(new East(), new North()),
+        Arguments.of(new West(), new South())
+    );
+  }
 
-    @ParameterizedTest(name = "in {0}")
-    @EnumSource(value = PositionsToMoveForwardTwice.class)
-    void move_forward_twice(PositionsToMoveForwardTwice positionsToMoveForwardTwice) {
-        Rover rover = new Rover(initialPosition, positionsToMoveForwardTwice.direction);
-        rover.moveForward();
-        rover.moveForward();
+  @ParameterizedTest(name = "facing in {0}")
+  @MethodSource("parametersDirectionsToLeftTest")
+  void turn_left(Direction initialDirection, Direction expectedDirection) {
+    Rover rover = new Rover(initialPosition, initialDirection);
+    rover.turnLeft();
+    assertThat(rover).hasDirection(expectedDirection);
+  }
 
-        assertThat(rover).hasPosition(positionsToMoveForwardTwice.expected);
-    }
+  private static Stream<Arguments> parametersDirectionsToRightTest() {
+    return Stream.of(
+        Arguments.of(new North(), new East()),
+        Arguments.of(new South(), new West()),
+        Arguments.of(new East(), new South()),
+        Arguments.of(new West(), new North())
+    );
+  }
 
-    @ParameterizedTest(name = "in {0}")
-    @EnumSource(value = PositionsToMoveBackwardTwice.class)
-    void move_backward_twice(PositionsToMoveBackwardTwice positionsToMoveBackwardTwice) {
-        Rover rover = new Rover(initialPosition, positionsToMoveBackwardTwice.direction);
-        rover.moveBackward();
-        rover.moveBackward();
+  @ParameterizedTest(name = "facing in {0}")
+  @MethodSource("parametersDirectionsToRightTest")
+  void turn_right(Direction initialDirection, Direction expectedDirection) {
+    Rover rover = new Rover(initialPosition, initialDirection);
+    rover.turnRight();
+    assertThat(rover).hasDirection(expectedDirection);
+  }
 
-        assertThat(rover).hasPosition(positionsToMoveBackwardTwice.expected);
-    }
+  private static Stream<Arguments> parametersPositionsToMoveForwardTest() {
+    return Stream.of(
+        Arguments.of(new North(), new Position(0, 1)),
+        Arguments.of(new South(), new Position(0, -1)),
+        Arguments.of(new East(), new Position(1, 0)),
+        Arguments.of(new West(), new Position(-1, 0))
+    );
+  }
 
-    @Test
-    void follow_a_series_of_commands(){
-        List<Command> commands = List.of(FORWARD, TURN_LEFT, BACKWARD, TURN_RIGHT, BACKWARD, TURN_RIGHT, TURN_RIGHT);
+  @ParameterizedTest(name = "in {0}")
+  @MethodSource("parametersPositionsToMoveForwardTest")
+  void move_forward(Direction direction, Position expected) {
+    Rover rover = new Rover(initialPosition, direction);
+    rover.moveForward();
 
-        Rover roverAfterCommands = rover.followThis(commands);
+    assertThat(rover).hasPosition(expected);
+  }
 
-        assertThat(roverAfterCommands).hasDirection(new South());
-        assertThat(roverAfterCommands).hasPosition(new Position(1,0));
-    }
+  private static Stream<Arguments> parametersPositionsToMoveForwardTwiceTest() {
+    return Stream.of(
+        Arguments.of(new North(), new Position(0, 2)),
+        Arguments.of(new South(), new Position(0, -2)),
+        Arguments.of(new East(), new Position(2, 0)),
+        Arguments.of(new West(), new Position(-2, 0))
+    );
+  }
+
+  @ParameterizedTest(name = "in {0}")
+  @MethodSource("parametersPositionsToMoveForwardTwiceTest")
+  void move_forward_twice(Direction direction, Position expected) {
+    Rover rover = new Rover(initialPosition, direction);
+    rover.moveForward();
+    rover.moveForward();
+
+    assertThat(rover).hasPosition(expected);
+  }
+
+  private static Stream<Arguments> parametersPositionsToMoveBackwardTwiceTest() {
+    return Stream.of(
+        Arguments.of(new North(), new Position(0, -2)),
+        Arguments.of(new South(), new Position(0, 2)),
+        Arguments.of(new East(), new Position(-2, 0)),
+        Arguments.of(new West(), new Position(2, 0))
+    );
+  }
+
+  @ParameterizedTest(name = "in {0}")
+  @MethodSource("parametersPositionsToMoveBackwardTwiceTest")
+  void move_backward_twice(Direction direction, Position expected) {
+    Rover rover = new Rover(initialPosition, direction);
+    rover.moveBackward();
+    rover.moveBackward();
+
+    assertThat(rover).hasPosition(expected);
+  }
+
+  @Test
+  void follow_a_series_of_commands() {
+    List<Command> commands = List.of(FORWARD, TURN_LEFT, BACKWARD, TURN_RIGHT, BACKWARD, TURN_RIGHT, TURN_RIGHT);
+
+    Rover roverAfterCommands = rover.followThis(commands);
+
+    assertThat(roverAfterCommands).hasDirection(new South());
+    assertThat(roverAfterCommands).hasPosition(new Position(1, 0));
+  }
 }
