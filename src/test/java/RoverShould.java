@@ -136,7 +136,7 @@ public class RoverShould {
   void follow_a_series_of_commands() {
     List<CommandEnum> commandEnums = List.of(FORWARD, TURN_LEFT, BACKWARD, TURN_RIGHT, BACKWARD, TURN_RIGHT, TURN_RIGHT);
 
-    Rover roverAfterCommands = rover.followThis(commandEnums);
+    Rover roverAfterCommands = rover.executeCommands(commandEnums);
 
     assertThat(roverAfterCommands).hasDirection(new South());
     assertThat(roverAfterCommands).hasPosition(new Position(1, 0));
