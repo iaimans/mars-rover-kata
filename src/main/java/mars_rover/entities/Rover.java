@@ -1,6 +1,14 @@
-package mars_rover;
+package mars_rover.entities;
 
 import java.util.List;
+
+import mars_rover.value_objects.CommandEnum;
+import mars_rover.value_objects.direction.Direction;
+import mars_rover.value_objects.direction.East;
+import mars_rover.value_objects.direction.North;
+import mars_rover.value_objects.direction.South;
+import mars_rover.value_objects.direction.West;
+import mars_rover.value_objects.Position;
 
 public class Rover {
 
@@ -53,15 +61,15 @@ public class Rover {
         }
     }
 
-    public Rover followThis(List<Command> commands) {
-        for (Command command: commands) {
-            executeCommand(command);
+    public Rover followThis(List<CommandEnum> commandEnums) {
+        for (CommandEnum commandEnum : commandEnums) {
+            executeCommand(commandEnum);
         }
         return new Rover(this.position,this.direction);
     }
 
-    private void executeCommand(Command command) {
-        switch (command) {
+    private void executeCommand(CommandEnum commandEnum) {
+        switch (commandEnum) {
             case FORWARD -> this.moveForward();
             case BACKWARD -> this.moveBackward();
             case TURN_LEFT -> this.turnLeft();

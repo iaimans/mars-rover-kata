@@ -1,4 +1,4 @@
-package mars_rover;
+package mars_rover.value_objects.direction;
 
 public record East() implements Direction {
     @Override

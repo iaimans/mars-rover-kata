@@ -1,20 +1,20 @@
-import static mars_rover.Command.BACKWARD;
-import static mars_rover.Command.FORWARD;
-import static mars_rover.Command.TURN_LEFT;
-import static mars_rover.Command.TURN_RIGHT;
+import static mars_rover.value_objects.CommandEnum.BACKWARD;
+import static mars_rover.value_objects.CommandEnum.FORWARD;
+import static mars_rover.value_objects.CommandEnum.TURN_LEFT;
+import static mars_rover.value_objects.CommandEnum.TURN_RIGHT;
 import static roverAssertions.RoverAssert.assertThat;
 
 import java.util.List;
 import java.util.stream.Stream;
 
-import mars_rover.Command;
-import mars_rover.Direction;
-import mars_rover.East;
-import mars_rover.North;
-import mars_rover.Position;
-import mars_rover.Rover;
-import mars_rover.South;
-import mars_rover.West;
+import mars_rover.value_objects.CommandEnum;
+import mars_rover.value_objects.direction.Direction;
+import mars_rover.value_objects.direction.East;
+import mars_rover.value_objects.direction.North;
+import mars_rover.value_objects.Position;
+import mars_rover.entities.Rover;
+import mars_rover.value_objects.direction.South;
+import mars_rover.value_objects.direction.West;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -134,9 +134,9 @@ public class RoverShould {
 
   @Test
   void follow_a_series_of_commands() {
-    List<Command> commands = List.of(FORWARD, TURN_LEFT, BACKWARD, TURN_RIGHT, BACKWARD, TURN_RIGHT, TURN_RIGHT);
+    List<CommandEnum> commandEnums = List.of(FORWARD, TURN_LEFT, BACKWARD, TURN_RIGHT, BACKWARD, TURN_RIGHT, TURN_RIGHT);
 
-    Rover roverAfterCommands = rover.followThis(commands);
+    Rover roverAfterCommands = rover.followThis(commandEnums);
 
     assertThat(roverAfterCommands).hasDirection(new South());
     assertThat(roverAfterCommands).hasPosition(new Position(1, 0));

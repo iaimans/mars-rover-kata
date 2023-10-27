@@ -1,8 +1,8 @@
 package roverAssertions;
 
-import mars_rover.Direction;
-import mars_rover.Position;
-import mars_rover.Rover;
+import mars_rover.value_objects.direction.Direction;
+import mars_rover.value_objects.Position;
+import mars_rover.entities.Rover;
 import org.assertj.core.api.AbstractAssert;
 
 public class RoverAssert extends AbstractAssert<RoverAssert, Rover> {
