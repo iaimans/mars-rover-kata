@@ -95,52 +95,29 @@ class RoverShould {
     assertThat(rover).hasPosition(expected);
   }
 
-  private static Stream<Arguments> parametersPositionsToMoveForwardTwiceTest() {
+
+  private static Stream<Arguments> parametersCommands() {
     return Stream.of(
-        Arguments.of(new North(), new Position(0, 2)),
-        Arguments.of(new South(), new Position(0, -2)),
-        Arguments.of(new East(), new Position(2, 0)),
-        Arguments.of(new West(), new Position(-2, 0))
+        Arguments.of(
+            List.of(FORWARD, TURN_LEFT, BACKWARD, TURN_RIGHT, BACKWARD, TURN_RIGHT, TURN_RIGHT),
+            new South(),
+            new Position(1, 0)
+        ),
+        Arguments.of(
+            List.of(FORWARD, TURN_LEFT, TURN_RIGHT, BACKWARD, TURN_RIGHT),
+            new East(),
+            new Position(0, 0)
+        )
     );
   }
 
-  @ParameterizedTest(name = "in {0}")
-  @MethodSource("parametersPositionsToMoveForwardTwiceTest")
-  void move_forward_twice(Direction direction, Position expected) {
-    Rover rover = new Rover(initialPosition, direction);
-    rover.moveForward();
-    rover.moveForward();
-
-    assertThat(rover).hasPosition(expected);
-  }
-
-  private static Stream<Arguments> parametersPositionsToMoveBackwardTwiceTest() {
-    return Stream.of(
-        Arguments.of(new North(), new Position(0, -2)),
-        Arguments.of(new South(), new Position(0, 2)),
-        Arguments.of(new East(), new Position(-2, 0)),
-        Arguments.of(new West(), new Position(2, 0))
-    );
-  }
-
-  @ParameterizedTest(name = "in {0}")
-  @MethodSource("parametersPositionsToMoveBackwardTwiceTest")
-  void move_backward_twice(Direction direction, Position expected) {
-    Rover rover = new Rover(initialPosition, direction);
-    rover.moveBackward();
-    rover.moveBackward();
-
-    assertThat(rover).hasPosition(expected);
-  }
-
-  @Test
-  void follow_a_series_of_commands() {
-    List<CommandEnum> commandEnums = List.of(FORWARD, TURN_LEFT, BACKWARD, TURN_RIGHT, BACKWARD, TURN_RIGHT, TURN_RIGHT);
-
+  @ParameterizedTest(name = "when executing commands: {0} the rover should have direction {1} and position {2}")
+  @MethodSource("parametersCommands")
+  void follow_a_series_of_commands(List<CommandEnum> commandEnums, Direction expectedDirection, Position expectedPosition) {
    rover.move(commandEnums);
 
     assertThat(rover)
-        .hasDirection(new South())
-        .hasPosition(new Position(1, 0));
+        .hasDirection(expectedDirection)
+        .hasPosition(expectedPosition);
   }
 }

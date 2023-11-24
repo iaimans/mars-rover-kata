@@ -1,6 +1,5 @@
 package mars_rover.value_objects;
 
-// TODO: Change all method naming if we think a better option
 public record Position(int x, int y) {
     public Position incrementY() {
         return new Position(x, y+1);
