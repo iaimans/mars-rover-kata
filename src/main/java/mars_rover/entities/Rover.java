@@ -11,10 +11,6 @@ import mars_rover.value_objects.direction.South;
 import mars_rover.value_objects.direction.West;
 
 public class Rover {
-// GPS gps;
-// Controller controller;
-  //TODO En vez de posicion crear un objecto GPS que es quien se encarga
-  //TODO El Rover deberia tener un motor/controlador que se encargue de moverlo
   private Position position;
 
   private Direction direction;
@@ -26,34 +22,38 @@ public class Rover {
 
   public Position getPosition() {
     return position;
-  } //TODO Deberia llamar a GPS y que me devuelva la posicion
+  }
 
   public Direction getDirection() {
     return this.direction;
-  } //TODO Deberia llamar a GPS y que me devuelva la direccion
+  }
 
   public void turnLeft() {
     direction = direction.turnLeft();
-  } //TODO Quien realiza la accion?
+  }
 
   public void turnRight() {
     direction = direction.turnRight();
-  } //TODO Quien realiza la accion?
+  }
 
-  // TODO: Use State Pattern with Move
-  public void moveForward() { //TODO Quien realiza la accion? Un "fake" de motor/controlador que se encarga de mover el rover??
+
+  public void move(List<CommandEnum> commandEnums) {
+    commandEnums.forEach(this::executeCommand);
+  }
+
+  public void moveForward() {
     if (direction instanceof North) {
       position = position.incrementY();
-    } else if (direction instanceof West) {
-      position = position.decrementX();
     } else if (direction instanceof South) {
       position = position.decrementY();
+    } else if (direction instanceof West) {
+      position = position.decrementX();
     } else if (direction instanceof East) {
       position = position.incrementX();
     }
   }
 
-  public void moveBackward() { //TODO Quien realiza la accion?
+  public void moveBackward() {
     if (direction instanceof North) {
       position = position.decrementY();
     } else if (direction instanceof West) {
@@ -63,13 +63,6 @@ public class Rover {
     } else if (direction instanceof East) {
       position = position.decrementX();
     }
-  }
-
-  public Rover followThis(List<CommandEnum> commandEnums) { //TODO Rename?
-    for (CommandEnum commandEnum : commandEnums) {
-      executeCommand(commandEnum);
-    }
-    return new Rover(this.position, this.direction);
   }
 
   private void executeCommand(CommandEnum commandEnum) {

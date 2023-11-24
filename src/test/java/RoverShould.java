@@ -21,7 +21,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class RoverShould {
+
+class RoverShould {
 
   Position initialPosition;
 
@@ -136,9 +137,10 @@ public class RoverShould {
   void follow_a_series_of_commands() {
     List<CommandEnum> commandEnums = List.of(FORWARD, TURN_LEFT, BACKWARD, TURN_RIGHT, BACKWARD, TURN_RIGHT, TURN_RIGHT);
 
-    Rover roverAfterCommands = rover.followThis(commandEnums);
+   rover.move(commandEnums);
 
-    assertThat(roverAfterCommands).hasDirection(new South());
-    assertThat(roverAfterCommands).hasPosition(new Position(1, 0));
+    assertThat(rover)
+        .hasDirection(new South())
+        .hasPosition(new Position(1, 0));
   }
 }
